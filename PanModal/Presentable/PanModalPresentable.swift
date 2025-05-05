@@ -20,7 +20,12 @@ import UIKit
  ```
  */
 public protocol PanModalPresentable: AnyObject {
-
+    
+    /**
+     A flag to determine whether the dimmed background view should be shown
+     */
+    var shouldShowBackgroundView: Bool { get }
+    
     /**
      The scroll view embedded in the view controller.
      Setting this value allows for seamless transition scrolling between the embedded scroll view

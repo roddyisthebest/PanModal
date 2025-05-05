@@ -43,11 +43,6 @@ open class PanModalPresentationController: UIPresentationController {
     }
 
     // MARK: - Properties
-
-    /**
-     A flag to determine whether the dimmed background view should be shown
-     */
-    var shouldShowBackgroundView: Bool = true
     
     /**
      A flag to track if the presented view is animating
@@ -110,7 +105,7 @@ open class PanModalPresentationController: UIPresentationController {
      Background view used as an overlay over the presenting view
      */
     private lazy var backgroundView: DimmedView? = {
-        guard shouldShowBackgroundView else { return nil }
+        guard presentable?.shouldShowBackgroundView ?? true else { return nil }
 
         let view: DimmedView
         if let color = presentable?.panModalBackgroundColor {
@@ -899,7 +894,3 @@ private extension UIScrollView {
 }
 #endif
 
-
-extension PanModalPresentable {
-    var shouldShowBackgroundView: Bool { return true }
-}
