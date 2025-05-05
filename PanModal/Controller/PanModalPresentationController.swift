@@ -338,21 +338,13 @@ private extension PanModalPresentationController {
      based on the pan modal presentable.
      */
     func layoutPresentedView(in containerView: UIView) {
+        guard let presentable = presentable else { return }
 
-        /**
-         If the presented view controller does not conform to pan modal presentable
-         don't configure
-         */
-        guard let presentable = presentable
-            else { return }
-
-        /**
-         ⚠️ If this class is NOT used in conjunction with the PanModalPresentationAnimator
-         & PanModalPresentable, the presented view should be added to the container view
-         in the presentation animator instead of here
-         */
         containerView.addSubview(presentedView)
-        containerView.addGestureRecognizer(panGestureRecognizer)
+        
+        if presentable.shouldShowBackgroundView {
+            containerView.addGestureRecognizer(panGestureRecognizer)
+        }
 
         if presentable.showDragIndicator {
             addDragIndicatorView(to: presentedView)
