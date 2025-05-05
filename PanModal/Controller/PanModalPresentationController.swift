@@ -45,6 +45,11 @@ open class PanModalPresentationController: UIPresentationController {
     // MARK: - Properties
 
     /**
+     A flag to determine whether the dimmed background view should be shown
+     */
+    var shouldShowBackgroundView: Bool = true
+    
+    /**
      A flag to track if the presented view is animating
      */
     private var isPresentedViewAnimating = false
@@ -104,7 +109,9 @@ open class PanModalPresentationController: UIPresentationController {
     /**
      Background view used as an overlay over the presenting view
      */
-    private lazy var backgroundView: DimmedView = {
+    private lazy var backgroundView: DimmedView? = {
+        guard shouldShowBackgroundView else { return nil }
+
         let view: DimmedView
         if let color = presentable?.panModalBackgroundColor {
             view = DimmedView(dimColor: color)
@@ -182,12 +189,12 @@ open class PanModalPresentationController: UIPresentationController {
         configureScrollViewInsets()
 
         guard let coordinator = presentedViewController.transitionCoordinator else {
-            backgroundView.dimState = .max
+            backgroundView?.dimState = .max
             return
         }
 
         coordinator.animate(alongsideTransition: { [weak self] _ in
-            self?.backgroundView.dimState = .max
+            self?.backgroundView?.dimState = .max
             self?.presentedViewController.setNeedsStatusBarAppearanceUpdate()
         })
     }
@@ -195,14 +202,14 @@ open class PanModalPresentationController: UIPresentationController {
     override public func presentationTransitionDidEnd(_ completed: Bool) {
         if completed { return }
 
-        backgroundView.removeFromSuperview()
+        backgroundView?.removeFromSuperview()
     }
 
     override public func dismissalTransitionWillBegin() {
         presentable?.panModalWillDismiss()
 
         guard let coordinator = presentedViewController.transitionCoordinator else {
-            backgroundView.dimState = .off
+            backgroundView?.dimState = .off
             return
         }
 
@@ -212,7 +219,7 @@ open class PanModalPresentationController: UIPresentationController {
          */
         coordinator.animate(alongsideTransition: { [weak self] _ in
             self?.dragIndicatorView.alpha = 0.0
-            self?.backgroundView.dimState = .off
+            self?.backgroundView?.dimState = .off
             self?.presentingViewController.setNeedsStatusBarAppearanceUpdate()
         })
     }
@@ -396,6 +403,7 @@ private extension PanModalPresentationController {
      & configures its layout constraints.
      */
     func layoutBackgroundView(in containerView: UIView) {
+        guard let backgroundView = backgroundView else { return }
         containerView.addSubview(backgroundView)
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
         backgroundView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
@@ -655,7 +663,7 @@ private extension PanModalPresentationController {
         presentedView.frame.origin.y = max(yPos, anchoredYPosition)
         
         guard presentedView.frame.origin.y > shortFormYPosition else {
-            backgroundView.dimState = .max
+            backgroundView?.dimState = .max
             return
         }
 
@@ -665,7 +673,7 @@ private extension PanModalPresentationController {
          Once presentedView is translated below shortForm, calculate yPos relative to bottom of screen
          and apply percentage to backgroundView alpha
          */
-        backgroundView.dimState = .percent(1.0 - (yDisplacementFromShortForm / presentedView.frame.height))
+        backgroundView?.dimState = .percent(1.0 - (yDisplacementFromShortForm / presentedView.frame.height))
     }
 
     /**
@@ -890,3 +898,8 @@ private extension UIScrollView {
     }
 }
 #endif
+
+
+extension PanModalPresentable {
+    var shouldShowBackgroundView: Bool { return true }
+}
