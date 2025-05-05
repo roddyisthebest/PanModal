@@ -126,11 +126,9 @@ open class PanModalPresentationController: UIPresentationController {
      the presented view apperance without changing
      the presented view's properties
      */
-    private lazy var panContainerView: UIView = {
+    private lazy var panContainerView: PanContainerView = {
         let frame = containerView?.frame ?? .zero
-        let view = PassthroughView(frame: frame)
-        view.addSubview(presentedViewController.view)
-        return view
+        return PanContainerView(presentedView: presentedViewController.view, frame: frame)
     }()
 
     /**
