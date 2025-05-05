@@ -126,9 +126,11 @@ open class PanModalPresentationController: UIPresentationController {
      the presented view apperance without changing
      the presented view's properties
      */
-    private lazy var panContainerView: PanContainerView = {
+    private lazy var panContainerView: UIView = {
         let frame = containerView?.frame ?? .zero
-        return PanContainerView(presentedView: presentedViewController.view, frame: frame)
+        let view = PassthroughView(frame: frame)
+        view.addSubview(presentedViewController.view)
+        return view
     }()
 
     /**
@@ -185,9 +187,9 @@ open class PanModalPresentationController: UIPresentationController {
 
         
         if !(presentable?.shouldShowBackgroundView ?? true) {
-            backgroundView?.isUserInteractionEnabled = false
-            containerView.isUserInteractionEnabled = true // 중요!
-        }
+             containerView.isUserInteractionEnabled = false
+             containerView.subviews.forEach { $0.isUserInteractionEnabled = true }
+         }
         
         guard let coordinator = presentedViewController.transitionCoordinator else {
             backgroundView?.dimState = .max
