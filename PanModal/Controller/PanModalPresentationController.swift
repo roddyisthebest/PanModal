@@ -183,6 +183,11 @@ open class PanModalPresentationController: UIPresentationController {
         layoutPresentedView(in: containerView)
         configureScrollViewInsets()
 
+        
+        if !(presentable?.shouldShowBackgroundView ?? true) {
+            containerView.isUserInteractionEnabled = false
+        }
+        
         guard let coordinator = presentedViewController.transitionCoordinator else {
             backgroundView?.dimState = .max
             return
