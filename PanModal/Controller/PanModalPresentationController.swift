@@ -185,7 +185,8 @@ open class PanModalPresentationController: UIPresentationController {
 
         
         if !(presentable?.shouldShowBackgroundView ?? true) {
-            containerView.isUserInteractionEnabled = false
+            backgroundView?.isUserInteractionEnabled = false
+            containerView.isUserInteractionEnabled = true // 중요!
         }
         
         guard let coordinator = presentedViewController.transitionCoordinator else {
@@ -341,9 +342,11 @@ private extension PanModalPresentationController {
         guard let presentable = presentable else { return }
 
         containerView.addSubview(presentedView)
-        
+
         if presentable.shouldShowBackgroundView {
             containerView.addGestureRecognizer(panGestureRecognizer)
+        } else {
+            panContainerView.addGestureRecognizer(panGestureRecognizer) // ✅ 여기로 변경
         }
 
         if presentable.showDragIndicator {
